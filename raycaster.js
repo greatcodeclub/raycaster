@@ -17,24 +17,20 @@ function Map() {
   this.grid = [
   // x =>
   // 0  1  2  3  4  5  6  7  8  9
-     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0
-     1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 1
-     1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 2
-     1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 3
-     1, 0, 0, 0, 0, 1, 0, 0, 0, 1, // 4
-     1, 0, 0, 0, 0, 1, 0, 0, 0, 1, // 5
-     1, 0, 0, 0, 1, 1, 0, 0, 0, 1, // 6
-     1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 7
-     1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 8
-     1, 1, 1, 1, 1, 1, 1, 1, 1, 1  // 9
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0
+     0, 0, 0, 0, 0, 1, 0, 0, 0, 0, // 1
+     0, 0, 0, 0, 0, 1, 0, 0, 0, 0, // 2
+     0, 0, 0, 1, 1, 1, 1, 1, 0, 0, // 3
+     0, 0, 0, 0, 0, 1, 0, 0, 0, 0, // 4
+     0, 0, 0, 0, 0, 1, 0, 0, 0, 0, // 5
+     1, 1, 1, 0, 0, 1, 0, 0, 1, 1, // 6
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 7
+     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 8
+     0, 0, 0, 0, 0, 1, 0, 0, 0, 0  // 9
   ]
 
   this.width = 10
   this.height = 10
-
-  // Size of one element in the grid.
-  this.gridWidth = 64
-  this.gridHeight = 64
 }
 
 Map.prototype.get = function(x, y) {
@@ -104,7 +100,7 @@ Camera.prototype.project = function(canvas) {
   // Distance from projection plane
   var distanceFromPlane = canvas.width / 2 / Math.tan(this.fov / 2 * DEG)
 
-  for (var column = 0; column < canvas.width; column++) {
+  for (var x = 0; x < canvas.width; x++) {
     var distance = this.castRay(rayAngle)
     
     // Correct fish eye distortion
@@ -117,12 +113,12 @@ Camera.prototype.project = function(canvas) {
 
     // Draw column slice
     context.fillStyle = '#f0f'
-    context.fillRect(column, y, 1, sliceHeight)
+    context.fillRect(x, y, 1, sliceHeight)
 
     // Shade it based on distance
     context.fillStyle = '#000'
     context.globalAlpha = distance / this.maxDistance * 1.3
-    context.fillRect(column, y, 1, sliceHeight)
+    context.fillRect(x, y, 1, sliceHeight)
     context.globalAlpha = 1
 
     rayAngle += angleIncrement
