@@ -1,10 +1,15 @@
-var RAD = Math.PI / 180
+var DEG = Math.PI / 180 // 1 deg == pi/180 radian
 
 function Player() {
   this.x = 1
-  this.y = 5
+  this.y = 1
 
-  this.angle = 35
+  this.angle = 45
+}
+
+Player.prototype.move = function(distance) {
+  this.x += Math.cos(this.angle * DEG) * distance
+  this.y += Math.sin(this.angle * DEG) * distance
 }
 
 function Map() {
@@ -15,10 +20,10 @@ function Map() {
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, // 0
      1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 1
      1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 2
-     1, 0, 0, 0, 0, 1, 0, 0, 0, 1, // 3
+     1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 3
      1, 0, 0, 0, 0, 1, 0, 0, 0, 1, // 4
      1, 0, 0, 0, 0, 1, 0, 0, 0, 1, // 5
-     1, 0, 0, 0, 0, 1, 0, 0, 0, 1, // 6
+     1, 0, 0, 0, 1, 1, 0, 0, 0, 1, // 6
      1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 7
      1, 0, 0, 0, 0, 0, 0, 0, 0, 1, // 8
      1, 1, 1, 1, 1, 1, 1, 1, 1, 1  // 9
@@ -43,8 +48,9 @@ Map.prototype.get = function(x, y) {
 }
 
 // Draw a mini map on screen w/ the player and its field of view.
-Map.prototype.draw = function(context, player, camera, startX, startY) {
+Map.prototype.draw = function(canvas, player, camera, startX, startY) {
   var scale = 10
+  var context = canvas.getContext("2d")
 
   for (var x = startX; x < this.width; x++) {
     for (var y = startY; y < this.width; y++) {
@@ -63,10 +69,10 @@ Map.prototype.draw = function(context, player, camera, startX, startY) {
   var angle = camera.fov / 2
   context.beginPath()
   context.moveTo(player.x * scale, player.y * scale)
-  context.lineTo((player.x + Math.cos((player.angle - angle) * RAD) * depth) * scale,
-                 (player.y + Math.sin((player.angle - angle) * RAD) * depth) * scale)
-  context.lineTo((player.x + Math.cos((player.angle + angle) * RAD) * depth) * scale,
-                 (player.y + Math.sin((player.angle + angle) * RAD) * depth) * scale)
+  context.lineTo((player.x + Math.cos((player.angle - angle) * DEG) * depth) * scale,
+                 (player.y + Math.sin((player.angle - angle) * DEG) * depth) * scale)
+  context.lineTo((player.x + Math.cos((player.angle + angle) * DEG) * depth) * scale,
+                 (player.y + Math.sin((player.angle + angle) * DEG) * depth) * scale)
   context.lineWidth = 2
   context.fillStyle = "#00f"
   context.globalAlpha = 0.2
@@ -78,55 +84,94 @@ Map.prototype.draw = function(context, player, camera, startX, startY) {
   context.fillRect(player.x * scale, player.y * scale, scale, scale)
 }
 
-function Camera(canvas) {
+function Camera(map, player) {
+  this.map = map
+  this.player = player
+
   // Field of view, in degree.
   this.fov = 60
 
-  // Distance from projection plane
-  this.distance = canvas.width / 2 / Math.tan(this.fov / 2 * RAD)
-
+  // Max distance to draw
   this.maxDistance = 15
 }
 
-var canvas = document.getElementById("screen")
-var camera = new Camera(canvas)
-var player = new Player()
-var map = new Map()
+Camera.prototype.project = function(canvas) {
+  var context = canvas.getContext("2d")
 
-var context = canvas.getContext("2d")
-map.draw(context, player, camera, 0, 0)
+  // Loop over each ray angles to cast
+  var rayAngle = player.angle - (this.fov / 2)
+  var angleIncrement = this.fov / canvas.width
+  // Distance from projection plane
+  var distanceFromPlane = canvas.width / 2 / Math.tan(this.fov / 2 * DEG)
 
-// Loop over each ray angles to cast
-var rayAngle = player.angle - (camera.fov / 2)
-var angleIncrement = camera.fov / canvas.width
+  for (var column = 0; column < canvas.width; column++) {
+    var distance = this.castRay(rayAngle)
+    
+    // Correct fish eye distortion
+    distance = distance * Math.cos((player.angle - rayAngle) * DEG)
 
-for (var column = 0; column < canvas.width; column += 1) {
-  var distance = castRay(player.x, player.y, rayAngle)
-  var sliceHeight = 1 / distance * camera.distance
-  
-  // Draw column slice
-  context.fillStyle = '#f0f'
-  context.fillRect(column, canvas.height / 2 - sliceHeight / 2, 1, sliceHeight)
+    var sliceHeight = 1 / distance * distanceFromPlane
 
-  // Shading
-  context.fillStyle = '#000'
-  context.globalAlpha = distance / camera.maxDistance
-  context.fillRect(column, canvas.height / 2 - sliceHeight / 2, 1, sliceHeight)
-  context.globalAlpha = 1
+    // Center column vertically
+    var y = canvas.height / 2 - sliceHeight / 2
 
-  rayAngle += angleIncrement
+    // Draw column slice
+    context.fillStyle = '#f0f'
+    context.fillRect(column, y, 1, sliceHeight)
+
+    // Shade it based on distance
+    context.fillStyle = '#000'
+    context.globalAlpha = distance / this.maxDistance * 1.3
+    context.fillRect(column, y, 1, sliceHeight)
+    context.globalAlpha = 1
+
+    rayAngle += angleIncrement
+  }
 }
 
-function castRay(startX, startY, angle) {
-  for (var i = 0; i < camera.maxDistance; i++) {
-    var x = startX + Math.cos(angle * RAD) * i
-    var y = startY + Math.sin(angle * RAD) * i
+Camera.prototype.castRay = function(angle) {
+  var x = player.x
+  var y = player.y
+
+  var lengthIncrement = 0.01
+  var xIncrement = Math.cos(angle * DEG) * lengthIncrement
+  var yIncrement = Math.sin(angle * DEG) * lengthIncrement
+
+  for (var length = 0; length < this.maxDistance; length+=0.01) {
+    x += xIncrement
+    y += yIncrement
 
     var hit = map.get(x, y)
 
-    context.fillStyle = hit ? "#900" : "#090"
-    context.fillRect(x * 10, y * 10, 5, 5)
-
-    if (hit) return i
+    if (hit) return length
   }
 }
+
+var canvas = document.getElementById("screen")
+var player = new Player()
+var map = new Map()
+var camera = new Camera(map, player)
+var game = new Game(canvas)
+
+game.onFrame(function() {
+  if (game.keyPressed.up) {
+    player.move(0.1)
+  } else if (game.keyPressed.down) {
+    player.move(-0.1)
+  }
+
+  if (game.keyPressed.left) {
+    player.angle -= 1
+  } else if (game.keyPressed.right) {
+    player.angle += 1
+  }
+
+  var context = canvas.getContext("2d")
+
+  // Clear the screen
+  context.fillStyle = '#fff'
+  context.fillRect(0, 0, canvas.width, canvas.height)
+
+  camera.project(canvas)  
+  map.draw(canvas, player, camera, 0, 0)
+})
