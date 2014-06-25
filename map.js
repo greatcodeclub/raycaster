@@ -34,6 +34,7 @@ Map.prototype.draw = function(canvas, camera, startX, startY) {
   var scale = 10
   var context = canvas.getContext("2d")
 
+  // Draw map
   for (var x = startX; x < this.width; x++) {
     for (var y = startY; y < this.width; y++) {
       if (this.get(x, y)) {
@@ -55,7 +56,6 @@ Map.prototype.draw = function(canvas, camera, startX, startY) {
                  (camera.y + Math.sin((camera.angle - angle) * DEG) * depth) * scale)
   context.lineTo((camera.x + Math.cos((camera.angle + angle) * DEG) * depth) * scale,
                  (camera.y + Math.sin((camera.angle + angle) * DEG) * depth) * scale)
-  context.lineWidth = 2
   context.fillStyle = "#00f"
   context.globalAlpha = 0.2
   context.fill()
