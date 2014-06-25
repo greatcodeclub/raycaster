@@ -1,12 +1,12 @@
 function Camera(map) {
   this.map = map
-  
+
   // Initial camera position
-  this.x = 1
-  this.y = 1
+  this.x = 0
+  this.y = 5
 
   // Camera angle
-  this.angle = 45
+  this.angle = 0
 
   // Field of view, in degree.
   this.fov = 60
@@ -21,13 +21,13 @@ Camera.prototype.project = function(canvas) {
   // Loop over each ray angles to cast
   var rayAngle = this.angle - (this.fov / 2)
   var angleIncrement = this.fov / canvas.width
-  
+
   // Distance from projection plane
   var distanceFromPlane = canvas.width / 2 / Math.tan(this.fov / 2 * DEG)
 
   for (var x = 0; x < canvas.width; x++) {
     var distance = this.castRay(rayAngle)
-    
+
     // Correct fish eye distortion
     distance = distance * Math.cos((this.angle - rayAngle) * DEG)
 
