@@ -1,10 +1,6 @@
 function Game(canvas) {
   var self = this
 
-  this.context = canvas.getContext("2d")
-  this.width = canvas.width
-  this.height = canvas.height
-
   // Keep track of key states
   // Eg.:
   //   game.keyPressed.up === true  // while UP key is pressed)

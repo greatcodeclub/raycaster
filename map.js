@@ -1,8 +1,8 @@
 function Map() {
   // Matrix of the walls. 1 = wall, 0 = no wall
   this.grid = [
-  // x =>
-  // 0  1  2  3  4  5  6  7  8  9
+  // x
+  // 0  1  2  3  4  5  6  7  8  9     y
      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0
      0, 0, 0, 0, 0, 1, 0, 0, 0, 0, // 1
      0, 0, 0, 0, 0, 1, 0, 0, 0, 0, // 2
@@ -29,8 +29,8 @@ Map.prototype.get = function(x, y) {
   return this.grid[x + y * this.width]
 }
 
-// Draw a mini map on screen w/ the player and its field of view.
-Map.prototype.draw = function(canvas, player, camera, startX, startY) {
+// Draw a mini map on screen w/ the camera and its field of view.
+Map.prototype.draw = function(canvas, camera, startX, startY) {
   var scale = 10
   var context = canvas.getContext("2d")
 
@@ -50,18 +50,18 @@ Map.prototype.draw = function(canvas, player, camera, startX, startY) {
   var depth = 5
   var angle = camera.fov / 2
   context.beginPath()
-  context.moveTo(player.x * scale, player.y * scale)
-  context.lineTo((player.x + Math.cos((player.angle - angle) * DEG) * depth) * scale,
-                 (player.y + Math.sin((player.angle - angle) * DEG) * depth) * scale)
-  context.lineTo((player.x + Math.cos((player.angle + angle) * DEG) * depth) * scale,
-                 (player.y + Math.sin((player.angle + angle) * DEG) * depth) * scale)
+  context.moveTo(camera.x * scale, camera.y * scale)
+  context.lineTo((camera.x + Math.cos((camera.angle - angle) * DEG) * depth) * scale,
+                 (camera.y + Math.sin((camera.angle - angle) * DEG) * depth) * scale)
+  context.lineTo((camera.x + Math.cos((camera.angle + angle) * DEG) * depth) * scale,
+                 (camera.y + Math.sin((camera.angle + angle) * DEG) * depth) * scale)
   context.lineWidth = 2
   context.fillStyle = "#00f"
   context.globalAlpha = 0.2
   context.fill()
   context.globalAlpha = 1
 
-  // Draw player
+  // Draw camera position
   context.fillStyle = "#900"
-  context.fillRect(player.x * scale, player.y * scale, scale, scale)
+  context.fillRect(camera.x * scale, camera.y * scale, scale, scale)
 }
