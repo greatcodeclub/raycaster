@@ -27,7 +27,7 @@ game.onFrame(function() {
   context.fillRect(0, 0, canvas.width, canvas.height)
 
   // Project the camera on the canvas
-  camera.project(canvas)
+  camera.project(map, canvas)
 
   // Draw the mini-map
   map.draw(canvas, camera, 0, 0)

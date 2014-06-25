@@ -1,6 +1,4 @@
-function Camera(map) {
-  this.map = map
-
+function Camera() {
   // Initial camera position
   this.x = 0
   this.y = 5
@@ -15,7 +13,7 @@ function Camera(map) {
   this.maxDistance = 15
 }
 
-Camera.prototype.project = function(canvas) {
+Camera.prototype.project = function(map, canvas) {
   var context = canvas.getContext("2d")
 
   // Loop over each ray angles to cast
@@ -26,7 +24,7 @@ Camera.prototype.project = function(canvas) {
   var distanceFromPlane = canvas.width / 2 / Math.tan(this.fov / 2 * DEG)
 
   for (var x = 0; x < canvas.width; x++) {
-    var distance = this.castRay(rayAngle)
+    var distance = this.castRay(rayAngle, map)
 
     // Correct fish eye distortion
     distance = distance * Math.cos((this.angle - rayAngle) * DEG)
@@ -50,7 +48,7 @@ Camera.prototype.project = function(canvas) {
   }
 }
 
-Camera.prototype.castRay = function(angle) {
+Camera.prototype.castRay = function(angle, map) {
   var x = this.x
   var y = this.y
 
