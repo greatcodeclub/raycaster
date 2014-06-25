@@ -63,5 +63,5 @@ Map.prototype.draw = function(canvas, camera, startX, startY) {
 
   // Draw camera position
   context.fillStyle = "#900"
-  context.fillRect(camera.x * scale, camera.y * scale, scale, scale)
+  context.fillRect(camera.x * scale - scale / 2, camera.y * scale - scale / 2, scale, scale)
 }
