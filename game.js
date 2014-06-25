@@ -29,6 +29,9 @@ Game.keys = {
   40: 'down'
 }
 
+// Setup the game loop.
+//
+// Calls the `callback` each time the screen needs to be redrawn.
 Game.prototype.onFrame = function(callback) {
   var self = this
 
