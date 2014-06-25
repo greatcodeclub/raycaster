@@ -19,6 +19,7 @@ function Map() {
   this.height = 10
 }
 
+// Return the value stored in the map grid at (x, y).
 Map.prototype.get = function(x, y) {
   x = Math.floor(x)
   y = Math.floor(y)
