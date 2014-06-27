@@ -32,7 +32,7 @@ Map.prototype.get = function(x, y) {
 
 // Draw a mini map on screen w/ the camera and its field of view.
 Map.prototype.draw = function(canvas, camera, startX, startY) {
-  var scale = 10
+  var scale = 20
   var context = canvas.getContext("2d")
 
   // Draw map
@@ -49,14 +49,13 @@ Map.prototype.draw = function(canvas, camera, startX, startY) {
   }
 
   // Draw FOV
-  var depth = 5
   var angle = camera.fov / 2
   context.beginPath()
   context.moveTo(camera.x * scale, camera.y * scale)
-  context.lineTo((camera.x + Math.cos((camera.angle - angle) * DEG) * depth) * scale,
-                 (camera.y + Math.sin((camera.angle - angle) * DEG) * depth) * scale)
-  context.lineTo((camera.x + Math.cos((camera.angle + angle) * DEG) * depth) * scale,
-                 (camera.y + Math.sin((camera.angle + angle) * DEG) * depth) * scale)
+  context.lineTo((camera.x + Math.cos((camera.angle - angle) * DEG) * camera.maxDistance) * scale,
+                 (camera.y + Math.sin((camera.angle - angle) * DEG) * camera.maxDistance) * scale)
+  context.lineTo((camera.x + Math.cos((camera.angle + angle) * DEG) * camera.maxDistance) * scale,
+                 (camera.y + Math.sin((camera.angle + angle) * DEG) * camera.maxDistance) * scale)
   context.fillStyle = "#00f"
   context.globalAlpha = 0.2
   context.fill()
