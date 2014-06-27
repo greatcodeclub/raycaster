@@ -17,17 +17,17 @@ Camera.prototype.project = function(map, canvas) {
   var context = canvas.getContext("2d")
 
   // Loop over each ray angles to cast
-  var rayAngle = this.angle - (this.fov / 2)
+  var angle = this.angle - (this.fov / 2)
   var angleIncrement = this.fov / canvas.width
 
   // Distance from projection plane
   var distanceFromPlane = canvas.width / 2 / Math.tan(this.fov / 2 * DEG)
 
   for (var x = 0; x < canvas.width; x++) {
-    var distance = this.castRay(rayAngle, map)
+    var distance = this.castRay(angle, map)
 
     // Correct fish eye distortion
-    distance = distance * Math.cos((this.angle - rayAngle) * DEG)
+    distance = distance * Math.cos((this.angle - angle) * DEG)
 
     var sliceHeight = 1 / distance * distanceFromPlane
 
@@ -44,7 +44,7 @@ Camera.prototype.project = function(map, canvas) {
     context.fillRect(x, y, 1, sliceHeight)
     context.globalAlpha = 1
 
-    rayAngle += angleIncrement
+    angle += angleIncrement
   }
 }
 
