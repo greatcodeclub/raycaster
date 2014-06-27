@@ -35,8 +35,6 @@ Game.keys = {
 Game.prototype.onFrame = function(callback) {
   var self = this
 
-  var time = new Date().getTime()
-
   if (window.requestAnimationFrame) {
     requestAnimationFrame(function() {
       callback()
