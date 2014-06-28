@@ -27,6 +27,7 @@ Camera.prototype.project = function(map, canvas) {
     var distance = this.castRay(angle, map)
 
     // Correct fish eye distortion
+    // Ray angle (angle) need to be made relative to the camera angle.
     distance = distance * Math.cos((this.angle - angle) * DEG)
 
     var sliceHeight = 1 / distance * distanceFromPlane
