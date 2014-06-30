@@ -20,8 +20,8 @@ Camera.prototype.project = function(map, canvas) {
   var angle = this.angle - (this.fov / 2)
   var angleIncrement = this.fov / canvas.width
 
-  // Distance from projection plane
-  var distanceFromPlane = canvas.width / 2 / Math.tan(this.fov / 2 * DEG)
+  // Distance from screen
+  var distanceFromScreen = canvas.width / 2 / Math.tan(this.fov / 2 * DEG)
 
   for (var x = 0; x < canvas.width; x++) {
     var distance = this.castRay(angle, map)
@@ -30,7 +30,7 @@ Camera.prototype.project = function(map, canvas) {
     // Ray angle (angle) need to be made relative to the camera angle.
     distance = distance * Math.cos((this.angle - angle) * DEG)
 
-    var sliceHeight = 1 / distance * distanceFromPlane
+    var sliceHeight = 1 / distance * distanceFromScreen
 
     // Center column vertically
     var y = canvas.height / 2 - sliceHeight / 2
