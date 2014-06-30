@@ -1,7 +1,7 @@
 function Camera() {
   // Initial camera position
   this.x = 0
-  this.y = 5
+  this.y = 500
 
   // Camera angle
   this.angle = 0
@@ -10,7 +10,7 @@ function Camera() {
   this.fov = 60
 
   // Max distance to draw
-  this.maxDistance = 15
+  this.maxDistance = 1500
 }
 
 Camera.prototype.project = function(map, canvas) {
@@ -18,11 +18,13 @@ Camera.prototype.project = function(map, canvas) {
 
   // Loop over each ray angles to cast
   var angle = this.angle - (this.fov / 2)
+  // Calculate angle increment to advance 1px horizontally on screen.
   var angleIncrement = this.fov / canvas.width
 
   // Distance from screen
   var distanceFromScreen = canvas.width / 2 / Math.tan(this.fov / 2 * DEG)
 
+  // Cast all the rays and draw screen (canvas) wall slices from left to right.
   for (var x = 0; x < canvas.width; x++) {
     var distance = this.castRay(angle, map)
 
@@ -30,7 +32,7 @@ Camera.prototype.project = function(map, canvas) {
     // Ray angle (angle) need to be made relative to the camera angle.
     distance = distance * Math.cos((this.angle - angle) * DEG)
 
-    var sliceHeight = 1 / distance * distanceFromScreen
+    var sliceHeight = map.wallHeight / distance * distanceFromScreen
 
     // Center column vertically
     var y = canvas.height / 2 - sliceHeight / 2
@@ -50,14 +52,15 @@ Camera.prototype.project = function(map, canvas) {
 }
 
 Camera.prototype.castRay = function(angle, map) {
+  // Start casting ray from camera position
   var x = this.x
   var y = this.y
 
-  var increment = 0.01
-  var xIncrement = Math.cos(angle * DEG) * increment
-  var yIncrement = Math.sin(angle * DEG) * increment
+  // Pre-compute cartesian increments to make it faster
+  var xIncrement = Math.cos(angle * DEG)
+  var yIncrement = Math.sin(angle * DEG)
 
-  for (var length = 0; length < this.maxDistance; length += increment) {
+  for (var length = 0; length < this.maxDistance; length++) {
     x += xIncrement
     y += yIncrement
 

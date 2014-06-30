@@ -1,5 +1,6 @@
 function Map() {
   // Matrix of the walls. 1 = wall, 0 = no wall
+  // Each block is 100x100x100.
   this.grid = [
   // x
   // 0  1  2  3  4  5  6  7  8  9     y
@@ -15,36 +16,40 @@ function Map() {
      0, 0, 0, 0, 0, 0, 0, 0, 0, 0  // 9
   ]
 
-  this.width = 10
-  this.height = 10
+  this.width = 1000
+  this.height = 1000
+
+  this.blockSize = 100
+  this.wallHeight = this.blockSize
 }
 
 // Return the value stored in the map grid at (x, y).
 Map.prototype.get = function(x, y) {
-  x = Math.floor(x)
-  y = Math.floor(y)
   if (x < 0 || x >= this.width ||
       y < 0 || y >= this.height) {
     return 1 // default to wall
   }
-  return this.grid[x + y * this.width]
+  x = Math.floor(x / this.blockSize)
+  y = Math.floor(y / this.blockSize)
+  return this.grid[x + y * this.width / this.blockSize]
 }
 
 // Draw a mini map on screen w/ the camera and its field of view.
-Map.prototype.draw = function(canvas, camera, startX, startY) {
-  var scale = 20
+Map.prototype.draw = function(canvas, camera) {
+  var scale = 0.2
+  var blockSize = this.blockSize * scale
   var context = canvas.getContext("2d")
 
   // Draw map
-  for (var x = startX; x < this.width; x++) {
-    for (var y = startY; y < this.width; y++) {
+  for (var x = 0; x < this.width; x+=this.blockSize) {
+    for (var y = 0; y < this.height; y+=this.blockSize) {
       if (this.get(x, y)) {
         // wall
         context.fillStyle = "#000"
       } else {
         context.fillStyle = "#fff"
       }
-      context.fillRect(x * scale, y * scale, scale, scale)
+      context.fillRect(x * scale, y * scale, blockSize, blockSize)
     }
   }
 
@@ -63,5 +68,5 @@ Map.prototype.draw = function(canvas, camera, startX, startY) {
 
   // Draw camera position
   context.fillStyle = "#900"
-  context.fillRect(camera.x * scale - scale / 2, camera.y * scale - scale / 2, scale, scale)
+  context.fillRect(camera.x * scale - blockSize / 2, camera.y * scale - blockSize / 2, blockSize, blockSize)
 }

@@ -8,9 +8,9 @@ var game = new Game(canvas)
 game.onFrame(function() {
   // Move the camera
   if (game.keyPressed.up) {
-    camera.move(0.1)
+    camera.move(10)
   } else if (game.keyPressed.down) {
-    camera.move(-0.1)
+    camera.move(-10)
   }
 
   // Rotate the camera
@@ -30,5 +30,5 @@ game.onFrame(function() {
   camera.project(map, canvas)
 
   // Draw the mini-map
-  map.draw(canvas, camera, 0, 0)
+  map.draw(canvas, camera)
 })
