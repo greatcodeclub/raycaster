@@ -4,5 +4,7 @@ var canvas = document.getElementById("screen")
 var map = new Map()
 var camera = new Camera(map)
 
+camera.project(map, canvas)
+
 // Draw the mini-map
 map.draw(canvas, camera)
