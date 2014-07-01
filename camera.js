@@ -1,10 +1,10 @@
 function Camera() {
   // Initial camera position
   this.x = 0
-  this.y = 800
+  this.y = 500
 
   // Camera angle
-  this.angle = 10
+  this.angle = 0
 
   // Field of view, in degree.
   this.fov = 60
@@ -23,6 +23,8 @@ Camera.prototype.project = function(map, canvas) {
 
   for (var x = 0; x < canvas.width; x++) {
     var distance = this.castRay(angle, map)
+
+    distance = distance * Math.cos((this.angle - angle) * DEG)
 
     var sliceHeight = map.wallHeight / distance * distanceFromScreen
 
@@ -55,4 +57,9 @@ Camera.prototype.castRay = function(angle, map) {
 
     if (hit) return length
   }
+}
+
+Camera.prototype.move = function(distance) {
+  this.x += Math.cos(this.angle * DEG) * distance
+  this.y += Math.sin(this.angle * DEG) * distance
 }
