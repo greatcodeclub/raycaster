@@ -56,7 +56,7 @@ Camera.prototype.castRay = function(angle, map) {
   var x = this.x
   var y = this.y
 
-  // Pre-compute cartesian increments to make it faster
+  // Pre-compute Cartesian increments to make it faster
   var xIncrement = Math.cos(angle * DEG)
   var yIncrement = Math.sin(angle * DEG)
 
