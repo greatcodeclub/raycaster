@@ -23,14 +23,16 @@ function Map() {
   this.wallHeight = this.blockSize
 }
 
-// Return the value stored in the map grid at (x, y).
+// Return the value stored in the map grid for (x, y).
 Map.prototype.get = function(x, y) {
   if (x < 0 || x >= this.width ||
       y < 0 || y >= this.height) {
     return 1 // default to wall
   }
+
   x = Math.floor(x / this.blockSize)
   y = Math.floor(y / this.blockSize)
+
   return this.grid[x + y * this.width / this.blockSize]
 }
 
