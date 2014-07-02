@@ -26,7 +26,8 @@ Camera.prototype.project = function(map, canvas) {
 
   // Cast all the rays and draw screen (canvas) wall slices from left to right.
   for (var x = 0; x < canvas.width; x++) {
-    var distance = this.castRay(angle, map)
+    var ray = this.castRay(angle, map)
+    var distance = ray.length
 
     // Correct fish eye distortion
     // Ray angle (angle) need to be made relative to the camera angle.
@@ -38,7 +39,11 @@ Camera.prototype.project = function(map, canvas) {
     var y = canvas.height / 2 - sliceHeight / 2
 
     // Draw column slice
-    context.fillStyle = '#f0f'
+    if (ray.wall === 2) {
+      context.fillStyle = '#0ff'
+    } else {
+      context.fillStyle = '#f0f'
+    }
     context.fillRect(x, y, 1, sliceHeight)
 
     // Shade it based on distance
@@ -66,7 +71,7 @@ Camera.prototype.castRay = function(angle, map) {
 
     var hit = map.get(x, y)
 
-    if (hit) return length
+    if (hit) return { length: length, wall: hit }
   }
 }
 
